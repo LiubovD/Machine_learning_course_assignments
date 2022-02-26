@@ -1,0 +1,92 @@
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+
+cancer = load_breast_cancer()
+
+##Question 1
+#Scikit-learn works with lists, numpy arrays, scipy-sparse matrices, and pandas DataFrames, so converting the dataset to a DataFrame is not necessary for training this model. Using a DataFrame does however help make many things easier such as munging data, so let's practice creating a classifier with a pandas DataFrame.
+#Convert the sklearn.dataset cancer to a DataFrame.
+
+def answer_one():
+    cancerdf = pd.DataFrame(np.c_[cancer['data'], cancer['target']],
+                  columns= np.append(cancer['feature_names'], ['target']))
+    return cancerdf 
+answer_one()    
+
+##Question 2
+#What is the class distribution? (i.e. how many instances of malignant (encoded 0) and how many benign (encoded 1)?)
+#This function should return a Series named target of length 2 with integer values and index = ['malignant', 'benign']
+
+
+def answer_two():
+    cancerdf = answer_one()
+    count_target = cancerdf["target"].value_counts()
+    target_nonsorted = pd.Series(data=count_target, index=['1', '0'])
+    target = target_nonsorted.sort_values(ascending = True)
+    return target 
+answer_two()
+
+# Question 3
+# Split the DataFrame into X (the data) and y (the labels).
+
+def answer_three():
+    cancerdf = answer_one()
+    X = cancerdf.drop("target", axis = 1)
+    y_1 = cancerdf['target']
+    y = pd.Series(data = y_1)
+    return X, y
+answer_three()
+
+##Question 4
+#Using train_test_split, split X and y into training and test sets (X_train, X_test, y_train, and y_test).
+
+from sklearn.model_selection import train_test_split
+
+def answer_four():
+    X, y = answer_three()
+    X_train, X_test, y_train, y_test = train_test_split (X, y, random_state=0)
+    return X_train, X_test, y_train, y_test
+answer_four()
+
+
+from sklearn.neighbors import KNeighborsClassifier
+
+##Question 5
+#Using KNeighborsClassifier, fit a k-nearest neighbors (knn) classifier with X_train, y_train and using one nearest neighbor (n_neighbors = 1).
+
+def answer_five():
+    X_train, X_test, y_train, y_test = answer_four()
+    knn = KNeighborsClassifier(n_neighbors = 1)
+    knn.fit(X_train, y_train)
+    return knn 
+answer_five()
+
+##Question 6
+#Using your knn classifier, predict the class label using the mean value for each feature.
+
+def answer_six():
+    cancerdf = answer_one()
+    X_train, X_test, y_train, y_test = answer_four()
+    means = cancerdf.mean()[:-1].values.reshape(1, -1)
+    knn = answer_five()
+    return knn.predict(means) # Return your answer
+answer_six()
+
+##Question 6
+#Using your knn classifier, predict the class label using the mean value for each feature.
+
+def answer_seven():
+    X_train, X_test, y_train, y_test = answer_four()
+    knn = answer_five()    
+    return knn.predict(X_test)
+answer_seven()
+
+##Question 7
+#Using your knn classifier, predict the class labels for the test set X_test.
+
+def answer_seven():
+    X_train, X_test, y_train, y_test = answer_four()
+    knn = answer_five()
+    return knn.predict(X_test)
+answer_seven()
